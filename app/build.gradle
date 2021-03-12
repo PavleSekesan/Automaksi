@@ -8,6 +8,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
+        multiDexEnabled true
         applicationId "com.example.automaksi"
         minSdkVersion 16
         targetSdkVersion 30
@@ -32,8 +33,14 @@ android {
     }
 }
 
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 dependencies {
 
+    implementation platform('com.google.firebase:firebase-bom:26.7.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation 'com.android.support:multidex:2.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "130603737748",
+    "project_id": "automaksi-cd1e0",
+    "storage_bucket": "automaksi-cd1e0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130603737748:android:024ac71f90ca5bbc0bca81",
+        "android_client_info": {
+          "package_name": "com.example.automaksi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "130603737748-f4tvt357m17m9tgopgdebqlongi1qfuj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCE3FCJlugg_TrN70kln5DFuD79bT5Np5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130603737748-f4tvt357m17m9tgopgdebqlongi1qfuj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
