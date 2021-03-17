@@ -39,17 +39,26 @@ class MainActivity : AppCompatActivity() {
         addItemButton.setOnClickListener {
             val intent = Intent(this, AddItemActivity::class.java)
             startActivity(intent)
+
         }
 
         val orderRecycler : RecyclerView = findViewById(R.id.ordersRecyclerView)
         val adapter = OrderItemsAdapter(ArrayList(0))
         orderRecycler.adapter = adapter
         orderRecycler.layoutManager = LinearLayoutManager(this)
-        val name = intent.getStringExtra(intent.getStringExtra("name").toString())
-        val quantity = intent.getIntExtra("standard", 0)
-        if (name != null && quantity != 0) {
-            val newItem = Pair(name, quantity)
-            adapter.addItem(newItem)
+
+        val db = Firebase.firestore
+        db.collection("UserItems").document(auth.uid.toString()).get().addOnSuccessListener { document ->
+            if (document != null && document.data != null)
+            {
+                val items = document.data!!["items"] as ArrayList<Map<String,Any>>
+                for (item in items) {
+                    val name = item["name"]
+                    val currentQuantity = item["current_quantity"]
+                    val newItem = Pair(name.toString(),currentQuantity as Int)
+                    adapter.addItem(newItem)
+                }
+            }
         }
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
