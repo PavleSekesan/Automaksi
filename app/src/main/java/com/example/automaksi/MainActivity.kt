@@ -17,17 +17,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Choose authentication providers
-        val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
+        // Check if user is already logged in
+        var auth = FirebaseAuth.getInstance()
+        if (auth.currentUser == null)
+        {
+            // Choose authentication providers
+            val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
 
-        // Create and launch sign-in intent
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .build(),
-                RC_SIGN_IN)
-
+            // Create and launch sign-in intent
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(),
+                    RC_SIGN_IN)
+        }
 
         val addItemButton: View = findViewById(R.id.addItemFloatingActionButton)
         addItemButton.setOnClickListener {
