@@ -19,4 +19,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_input_add" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/ordersRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="77dp"
+        tools:layout_editor_absoluteY="49dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -21,6 +21,7 @@ class QuantitySelectorActivity : AppCompatActivity() {
         submitBtn.setOnClickListener {
             Toast.makeText(this, standard.progress.toString() + "/" + critical.progress.toString(), Toast.LENGTH_LONG).show()
             val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("name", itemNameText.text as String?)
             intent.putExtra("standard", standard.progress)
             intent.putExtra("critical", critical.progress)
             startActivity(intent)

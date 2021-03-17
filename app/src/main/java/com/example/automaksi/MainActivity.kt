@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
@@ -37,6 +39,17 @@ class MainActivity : AppCompatActivity() {
         addItemButton.setOnClickListener {
             val intent = Intent(this, AddItemActivity::class.java)
             startActivity(intent)
+        }
+
+        val orderRecycler : RecyclerView = findViewById(R.id.ordersRecyclerView)
+        val adapter = OrderItemsAdapter(ArrayList(0))
+        orderRecycler.adapter = adapter
+        orderRecycler.layoutManager = LinearLayoutManager(this)
+        val name = intent.getStringExtra(intent.getStringExtra("name").toString())
+        val quantity = intent.getIntExtra("standard", 0)
+        if (name != null && quantity != 0) {
+            val newItem = Pair(name, quantity)
+            adapter.addItem(newItem)
         }
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
