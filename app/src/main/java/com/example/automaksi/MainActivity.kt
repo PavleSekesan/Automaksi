@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
                             .build(),
                     RC_SIGN_IN)
         }
+        val db = Firebase.firestore
 
         val addItemButton: View = findViewById(R.id.addItemFloatingActionButton)
         addItemButton.setOnClickListener {
@@ -42,12 +43,45 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        // Sends order to database for the server to execute
+        val sendOrderButton : View = findViewById(R.id.sendOrderButton)
+        sendOrderButton.setOnClickListener {
+            db.collection("UserItems").document(auth.uid.toString()).collection("items").get().addOnSuccessListener { documents ->
+                val userId = auth.uid.toString()
+                val productsArray = arrayListOf<Map<String, Any>>()
+                for (document in documents) {
+                    val itemId = document.data["item_id"].toString()
+                    val quantity = document.data["current_quantity"] as Long
+                    productsArray.add(hashMapOf(
+                            "product_id" to itemId,
+                            "quantity" to quantity
+                    ))
+                }
+
+                val orderData = hashMapOf(
+                        "products" to productsArray,
+                        "user_id" to userId
+                )
+
+                db.collection("Orders")
+                        .add(orderData)
+                        .addOnSuccessListener { documentReference ->
+                            Log.d("Jaje", "DocumentSnapshot written with ID: ${documentReference.id}")
+                        }
+            }
+        }
+
+        val scanBarcodeButton : View = findViewById(R.id.scanBarcodeButton)
+        scanBarcodeButton.setOnClickListener {
+            val intent = Intent(this, BarcodeScannerActivity::class.java)
+            startActivity(intent)
+        }
+
         val orderRecycler : RecyclerView = findViewById(R.id.ordersRecyclerView)
         val adapter = OrderItemsAdapter(ArrayList(0))
         orderRecycler.adapter = adapter
         orderRecycler.layoutManager = LinearLayoutManager(this)
 
-        val db = Firebase.firestore
         db.collection("UserItems").document(auth.uid.toString()).collection("items").get().addOnSuccessListener { documents ->
             for (document in documents)
             {
