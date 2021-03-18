@@ -6,19 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
-class SearchItemsAdapter(private var dataSet: Array<String>) :
+class SearchItemsAdapter(private var dataSet: Array<Pair<String,Long>>) :
     RecyclerView.Adapter<SearchItemsAdapter.ViewHolder>() {
 
-    fun addItem(text : String) {
-        dataSet = dataSet.plus(text)
+    fun addItem(nameIdPair: Pair<String,Long>) {
+        dataSet = dataSet.plus(nameIdPair)
         super.notifyItemInserted(dataSet.size - 1)
     }
 
     fun clearItems() {
-        dataSet = emptyArray<String>()
+        dataSet = emptyArray()
         super.notifyDataSetChanged()
     }
     /**
@@ -49,11 +52,12 @@ class SearchItemsAdapter(private var dataSet: Array<String>) :
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
         val context = viewHolder.itemView.context
-        viewHolder.textView.text = dataSet[position]
+        viewHolder.textView.text = dataSet[position].first
         viewHolder.itemView.setOnClickListener {
             //Toast.makeText(viewHolder.itemView.context, viewHolder.textView.text.toString(), Toast.LENGTH_LONG).show()
             val intent = Intent(context, QuantitySelectorActivity::class.java)
             intent.putExtra("itemName", viewHolder.textView.text.toString())
+            intent.putExtra("itemId", dataSet[position].second)
             context.startActivity(intent)
         }
     }

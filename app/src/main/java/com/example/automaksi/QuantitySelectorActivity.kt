@@ -19,6 +19,7 @@ class QuantitySelectorActivity : AppCompatActivity() {
 
         val itemNameText : TextView = findViewById(R.id.textViewItemName)
         itemNameText.text = intent.getStringExtra("itemName")
+        val itemId = intent.getLongExtra("itemId", -1)
         val submitBtn : Button = findViewById(R.id.buttonSubmitQuantities)
         val standard : SeekBar = findViewById(R.id.seekBarStandard)
         val critical : SeekBar = findViewById(R.id.seekBarCritical)
@@ -26,29 +27,30 @@ class QuantitySelectorActivity : AppCompatActivity() {
             Toast.makeText(this, standard.progress.toString() + "/" + critical.progress.toString(), Toast.LENGTH_LONG).show()
             val db = Firebase.firestore
             val newItem = hashMapOf(
-                    "name" to itemNameText.toString(),
+                    "name" to itemNameText.text.toString(),
                     "current_quantity" to 0,
                     "optimal_quantity" to standard.progress,
-                    "critical_quantity" to critical.progress
+                    "critical_quantity" to critical.progress,
+                    "item_id" to itemId
             )
             var auth = FirebaseAuth.getInstance()
-            val docRef = db.collection("UserItems").document(auth.uid.toString())
-            docRef.get().addOnSuccessListener { document->
-                if (document.exists())
+            val docRef = db.collection("UserItems").document(auth.uid.toString()).collection("items").whereEqualTo("item_id",itemId)
+            docRef.get().addOnSuccessListener { documents->
+                if (documents.isEmpty)
                 {
-                    docRef.update("items", FieldValue.arrayUnion(newItem))
+                    db.collection("UserItems").document(auth.uid.toString()).collection("items").add(newItem).addOnCompleteListener {
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                    }
                 }
                 else
                 {
-                    val data = hashMapOf(
-                        "items" to arrayListOf(newItem)
-                    )
-                    docRef.set(data)
+                    Toast.makeText(this, "Item already added", Toast.LENGTH_SHORT).show()
+
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
                 }
             }
-
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
         }
     }
 }

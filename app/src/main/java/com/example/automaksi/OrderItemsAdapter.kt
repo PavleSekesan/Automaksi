@@ -6,12 +6,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.order_item.view.*
 
-class OrderItemsAdapter(private var products: ArrayList<Pair<String, Int>>) :
+class OrderItemsAdapter(private var products: ArrayList<Triple<String, Int, Int>>) :
         RecyclerView.Adapter<OrderItemsAdapter.ViewHolder>()  {
 
-        fun addItem(product : Pair<String, Int>) {
+        fun addItem(product : Triple<String, Int, Int>) {
             products.add(product)
             super.notifyItemInserted(products.size - 1)
         }
@@ -26,11 +29,39 @@ class OrderItemsAdapter(private var products: ArrayList<Pair<String, Int>>) :
         fun decreaseItem(pos: Int) {
             val quantity = products[pos].second
             if (quantity > 0)
-                products[pos] = Pair(products[pos].first, products[pos].second - 1)
+            {
+                // Update count in database
+                var auth = FirebaseAuth.getInstance()
+                val db = Firebase.firestore
+                val docRef = db.collection("UserItems").document(auth.uid.toString()).collection("items").whereEqualTo("item_id", products[pos].third)
+                docRef.get().addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        val currentQuantity = documents.first().data["current_quantity"] as Long
+                        val queryDocument = db.collection("UserItems").document(auth.uid.toString()).collection("items").document(documents.first().id)
+                        queryDocument.update(mapOf("current_quantity" to currentQuantity - 1 )).addOnSuccessListener {
+                            products[pos] = Triple(products[pos].first, products[pos].second - 1, products[pos].third)
+                            super.notifyDataSetChanged()
+                        }
+                    }
+                }
+            }
         }
 
         fun increaseItem(pos: Int) {
-            products[pos] = Pair(products[pos].first, products[pos].second + 1)
+            // Update count in database
+            var auth = FirebaseAuth.getInstance()
+            val db = Firebase.firestore
+            val docRef = db.collection("UserItems").document(auth.uid.toString()).collection("items").whereEqualTo("item_id", products[pos].third)
+            docRef.get().addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    val currentQuantity = documents.first().data["current_quantity"] as Long
+                    val queryDocument = db.collection("UserItems").document(auth.uid.toString()).collection("items").document(documents.first().id)
+                    queryDocument.update(mapOf("current_quantity" to currentQuantity + 1 )).addOnSuccessListener {
+                        products[pos] = Triple(products[pos].first, products[pos].second + 1, products[pos].third)
+                        super.notifyDataSetChanged()
+                    }
+                }
+            }
         }
 
         fun clearItems() {

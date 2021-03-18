@@ -1,56 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
     android:padding="45dp">
 
-    <TextView
-        android:id="@+id/itemNameTextView"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/constraintLayout5"
+        app:layout_constraintHorizontal_weight="5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/itemNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="JAEE"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Item 1"
-        android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/constraintLayout"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/quantityTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="69"
-        android:textSize="24sp"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/subtractButton"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="-"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/quantityTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        app:layout_constraintRight_toLeftOf="@id/addButton"
-        android:layout_marginRight="20dp"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/quantityTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/addButton"
-        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:text="+"
-        android:textSize="20sp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="69"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/addButton"
+            app:layout_constraintStart_toEndOf="@+id/subtractButton"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/subtractButton"
-        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
-        android:minHeight="0dp"
-        android:minWidth="0dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:text="0"
-        android:textSize="20sp"
-        app:layout_constraintRight_toLeftOf="@id/quantityTextView"
-        android:layout_marginRight="20dp"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addButton"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:text="+"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/quantityTextView"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

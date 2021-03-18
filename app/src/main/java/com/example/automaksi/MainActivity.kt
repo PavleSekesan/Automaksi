@@ -48,16 +48,15 @@ class MainActivity : AppCompatActivity() {
         orderRecycler.layoutManager = LinearLayoutManager(this)
 
         val db = Firebase.firestore
-        db.collection("UserItems").document(auth.uid.toString()).get().addOnSuccessListener { document ->
-            if (document != null && document.data != null)
+        db.collection("UserItems").document(auth.uid.toString()).collection("items").get().addOnSuccessListener { documents ->
+            for (document in documents)
             {
-                val items = document.data!!["items"] as ArrayList<Map<String,Any>>
-                for (item in items) {
-                    val name = item["name"]
-                    val currentQuantity = item["current_quantity"]
-                    val newItem = Pair(name.toString(),currentQuantity as Int)
-                    adapter.addItem(newItem)
-                }
+                val data = document.data
+                val name = data["name"]
+                val currentQuantity = data["current_quantity"] as Long
+                val itemId = data["item_id"] as Long
+                val newItem = Triple(name.toString(), currentQuantity.toInt(), itemId.toInt())
+                adapter.addItem(newItem)
             }
         }
     }
