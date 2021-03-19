@@ -57,7 +57,7 @@ class SearchItemsAdapter(private var dataSet: Array<Pair<String,Long>>) :
             //Toast.makeText(viewHolder.itemView.context, viewHolder.textView.text.toString(), Toast.LENGTH_LONG).show()
             val intent = Intent(context, QuantitySelectorActivity::class.java)
             intent.putExtra("itemName", viewHolder.textView.text.toString())
-            intent.putExtra("itemId", dataSet[position].second)
+            intent.putExtra("itemId", dataSet[position].second.toString())
             context.startActivity(intent)
         }
     }

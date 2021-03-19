@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Automaksi">
-        <activity android:name=".QuantitySelectorActivity"></activity>
+        <activity android:name=".WeekdaySelectorActivity" android:theme="@style/Theme.MaterialComponents.Light.Dialog" android:label=""></activity>
+        <activity android:name=".QuantitySelectorActivity" />
         <activity android:name=".AddItemActivity" />
         <activity android:name=".BarcodeScannerActivity" />
         <activity android:name=".MainActivity">

@@ -44,6 +44,9 @@ dependencies {
     implementation "androidx.camera:camera-view:1.0.0-alpha14"
     implementation 'com.google.mlkit:barcode-scanning:16.1.1'
 
+    // MaterialDayPicker (https://github.com/gantonious/MaterialDayPicker)
+    implementation 'ca.antonious:materialdaypicker:0.7.4'
+
     implementation platform('com.google.firebase:firebase-bom:26.7.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'

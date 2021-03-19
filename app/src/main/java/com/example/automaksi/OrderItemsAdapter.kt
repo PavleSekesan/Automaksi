@@ -11,61 +11,37 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.order_item.view.*
 
-class OrderItemsAdapter(private var products: ArrayList<Triple<String, Int, Int>>) :
+class OrderItemsAdapter(private var stockHandler: StockHandler) :
         RecyclerView.Adapter<OrderItemsAdapter.ViewHolder>()  {
+        private val itemIds = mutableListOf<String>()
 
-        fun addItem(product : Triple<String, Int, Int>) {
-            products.add(product)
-            super.notifyItemInserted(products.size - 1)
+        fun addItem(product : Map<String, Any>) {
+            if (product.containsKey("item_id"))
+            {
+                stockHandler.addItem(product)
+                val id = product["item_id"].toString()
+                itemIds.add(id)
+                stockHandler.addOnItemCountChangeListener(id) {
+                    super.notifyDataSetChanged()
+                }
+                super.notifyDataSetChanged()
+            }
         }
 
-        fun deleteItem(name : String) {
-            for (product in products) {
-                if (product.first == name)
-                    products.remove(product)
-            }
+        fun deleteItem(itemId : String) {
+            stockHandler.deleteItem(itemId)
         }
 
         fun decreaseItem(pos: Int) {
-            val quantity = products[pos].second
-            if (quantity > 0)
-            {
-                // Update count in database
-                var auth = FirebaseAuth.getInstance()
-                val db = Firebase.firestore
-                val docRef = db.collection("UserItems").document(auth.uid.toString()).collection("items").whereEqualTo("item_id", products[pos].third)
-                docRef.get().addOnSuccessListener { documents ->
-                    if (!documents.isEmpty) {
-                        val currentQuantity = documents.first().data["current_quantity"] as Long
-                        val queryDocument = db.collection("UserItems").document(auth.uid.toString()).collection("items").document(documents.first().id)
-                        queryDocument.update(mapOf("current_quantity" to currentQuantity - 1 )).addOnSuccessListener {
-                            products[pos] = Triple(products[pos].first, products[pos].second - 1, products[pos].third)
-                            super.notifyDataSetChanged()
-                        }
-                    }
-                }
-            }
+            stockHandler.modifyItemCount(itemIds[pos],-1)
         }
 
         fun increaseItem(pos: Int) {
-            // Update count in database
-            var auth = FirebaseAuth.getInstance()
-            val db = Firebase.firestore
-            val docRef = db.collection("UserItems").document(auth.uid.toString()).collection("items").whereEqualTo("item_id", products[pos].third)
-            docRef.get().addOnSuccessListener { documents ->
-                if (!documents.isEmpty) {
-                    val currentQuantity = documents.first().data["current_quantity"] as Long
-                    val queryDocument = db.collection("UserItems").document(auth.uid.toString()).collection("items").document(documents.first().id)
-                    queryDocument.update(mapOf("current_quantity" to currentQuantity + 1 )).addOnSuccessListener {
-                        products[pos] = Triple(products[pos].first, products[pos].second + 1, products[pos].third)
-                        super.notifyDataSetChanged()
-                    }
-                }
-            }
+            stockHandler.modifyItemCount(itemIds[pos]!!,1)
         }
 
         fun clearItems() {
-            products.clear()
+            itemIds.clear()
             super.notifyDataSetChanged()
         }
         /**
@@ -102,18 +78,21 @@ class OrderItemsAdapter(private var products: ArrayList<Triple<String, Int, Int>
             // Get element from your dataset at this position and replace the
             // contents of the view with that element
             val context = viewHolder.itemView.context
-            viewHolder.itemName.text = products[position].first
-            viewHolder.quantity.text = products[position].second.toString()
-            viewHolder.add.setOnClickListener {
-                increaseItem(position)
+            val item = stockHandler.getItem(itemIds[position])
+            if (item != null)
+            {
+                viewHolder.itemName.text = item["name"].toString()
+                viewHolder.quantity.text = item["current_quantity"].toString()
+                viewHolder.add.setOnClickListener {
+                    increaseItem(position)
+                }
+                viewHolder.subtract.setOnClickListener {
+                    decreaseItem(position)
+                }
             }
-            viewHolder.subtract.setOnClickListener {
-                decreaseItem(position)
-            }
-            viewHolder.quantity.text = products[position].second.toString()
         }
 
         // Return the size of your dataset (invoked by the layout manager)
-        override fun getItemCount() = products.size
+        override fun getItemCount() = itemIds.size
 
     }

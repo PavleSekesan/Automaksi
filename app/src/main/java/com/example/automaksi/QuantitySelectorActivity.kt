@@ -19,7 +19,7 @@ class QuantitySelectorActivity : AppCompatActivity() {
 
         val itemNameText : TextView = findViewById(R.id.textViewItemName)
         itemNameText.text = intent.getStringExtra("itemName")
-        val itemId = intent.getLongExtra("itemId", -1)
+        val itemId = intent.getStringExtra("itemId")
         val submitBtn : Button = findViewById(R.id.buttonSubmitQuantities)
         val standard : SeekBar = findViewById(R.id.seekBarStandard)
         val critical : SeekBar = findViewById(R.id.seekBarCritical)
