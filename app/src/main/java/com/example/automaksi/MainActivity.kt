@@ -109,10 +109,7 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this, WeekdaySelectorActivity::class.java)
                     startActivity(intent)
                 }
-                else
-                {
-                    continueAfterUserSetup(document.data?.get("delivery_days") as ArrayList<Int>)
-                }
+                continueAfterUserSetup(document.data?.get("delivery_days") as ArrayList<Int>)
             }
         }
     }

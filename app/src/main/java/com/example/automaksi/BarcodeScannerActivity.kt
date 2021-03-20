@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.AutoCompleteTextView
@@ -16,6 +18,7 @@ import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -71,12 +74,19 @@ class BarcodeScannerActivity : AppCompatActivity() {
     private lateinit var textView: TextView
     private var waitingForResponse = false
     private lateinit var chosenBarcode: String
+    private var chosenItemId: String? = null
+    private var chosenItemName: String? = null
+    private var db = FirebaseFirestore.getInstance()
 
     private fun scanConfirmed()
     {
         barcodeCountMap.clear()
         waitingForResponse = false
         textView.text = "SKENIRAJ PICKO"
+        val intent = Intent(this, QuantitySelectorActivity::class.java)
+        intent.putExtra("itemName", chosenItemName)
+        intent.putExtra("itemId", chosenItemId)
+        startActivity(intent)
         // Add the scanned barcode
     }
     private fun scanDeclined()
@@ -97,11 +107,53 @@ class BarcodeScannerActivity : AppCompatActivity() {
 
         // Wtf?
         webView.webViewClient = object : WebViewClient() {
+            var loadingFinished = true
+            var redirect = false
+            var nextPageIsItem = false
+
             override fun shouldOverrideUrlLoading(view: WebView?, url: String): Boolean {
-                view?.loadUrl(url)
-                return true
+                if (!loadingFinished) {
+                    redirect = true
+                }
+
+                loadingFinished = false
+                webView.loadUrl(url)
+                return true;
+            }
+
+            override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+                if (nextPageIsItem)
+                {
+                    chosenItemId = url?.split('/')?.last()
+                    db.collection("Products").whereEqualTo("id",chosenItemId).get().addOnSuccessListener { documents->
+                        if (!documents.isEmpty)
+                        {
+                            var okButton = findViewById<Button>(R.id.scan_ok_button)
+                            okButton.isEnabled = true
+                            chosenItemName= documents.first().data["name"]?.toString()
+                        }
+                    }
+                    nextPageIsItem = false
+                }
+                super.doUpdateVisitedHistory(view, url, isReload)
+            }
+
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                loadingFinished = false
+                super.onPageStarted(view, url, favicon)
+            }
+
+            override fun onPageFinished(view: WebView, url: String) {
+                if (!redirect) {
+                    loadingFinished = true
+                    nextPageIsItem = true
+                    webView.loadUrl("javascript:document.querySelector('.y4jrw3-7').click();")
+                } else {
+                    redirect = false
+                }
             }
         }
+
         // Request camera permissions
         if (allPermissionsGranted()) {
             startCamera()
@@ -132,6 +184,7 @@ class BarcodeScannerActivity : AppCompatActivity() {
             var okButton = findViewById<Button>(R.id.scan_ok_button)
             var wrongButton = findViewById<Button>(R.id.scan_wrong_button)
             okButton.visibility = Button.VISIBLE
+            okButton.isEnabled = false
             wrongButton.visibility = Button.VISIBLE
             textView.text = "Sken dobar?"
 
